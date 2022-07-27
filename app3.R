@@ -7,7 +7,7 @@ library(BiocFileCache)
 load_datasets <- function(dir = "datasets") {
     dataset_files <- list.files(path = dir, pattern = "*.yaml", full.names = TRUE)
     dataset_infos <- lapply(dataset_files, function(x){ yaml::read_yaml(x) })
-    names(dataset_infos) <- as.character(lapply(datasets_available, function(x) { x$id }))
+    names(dataset_infos) <- as.character(lapply(dataset_infos, function(x) { x$id }))
     return(dataset_infos)
 }
 

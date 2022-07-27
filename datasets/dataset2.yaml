@@ -1,4 +1,6 @@
 id: zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds
+filename: sce_hgsc_annotated_final.rds
+source: zenodo
 url: https://zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds?download=1
 summary: |
   # Raw and normalized count data for "Probabilistic cell-type assignment of single-cell RNA-seq for tumor microenvironment profiling"

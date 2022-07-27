@@ -1,4 +1,6 @@
 id: zenodo.org/record/5196144/files/sce_hnscc.rds
+filename: sce_hnscc.rds
+source: zenodo
 url: https://zenodo.org/record/5196144/files/sce_hnscc.rds?download=1
 summary: |
   # Puram et al HNSCC data SingleCellExperiment and seurat object for MultiNicheNet

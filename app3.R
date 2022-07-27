@@ -11,12 +11,13 @@ load_datasets <- function(dir = "datasets") {
     return(dataset_infos)
 }
 
-datasets_available <- load_datasets()
-str(datasets_available)
+datasets_available_list <- load_datasets()
+str(datasets_available_list)
 
 tabulate_datasets <- function(list) {
     data.frame(
-        id = names(datasets_available)
+        filename = as.character(lapply(datasets_available_list, function(x){ x$filename })),
+        source = as.character(lapply(datasets_available_list, function(x){ x$source }))
     )
 }
 

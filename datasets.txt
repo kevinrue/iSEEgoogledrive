@@ -1,2 +1,3 @@
 id  url
-zenodo.org/record/5196144    https://zenodo.org/record/5196144/files/sce_hnscc.rds?download=1
+zenodo.org/record/5196144/files/sce_hnscc.rds    https://zenodo.org/record/5196144/files/sce_hnscc.rds?download=1
+zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds    https://zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds?download=1

@@ -21,7 +21,7 @@ tabulate_datasets <- function(list) {
     )
 }
 
-datasets_available_table <- tabulate_datasets(datasets_available)
+datasets_available_table <- tabulate_datasets(datasets_available_list)
 datasets_available_table
 
 # lpfun ----
@@ -30,10 +30,10 @@ lpfun <- function() {
     bfc <- BiocFileCache()
     
     se_load <- function(x) {
-        dataset_id <- datasets_available[[x]][["id"]]
+        dataset_id <- datasets_available_list[[x]][["id"]]
         bioc_rpath <- bfcquery(x = bfc, query = dataset_id, field = "rname")[1, "rpath", drop=TRUE]
         if (is.na(bioc_rpath)) {
-            bioc_rpath <- bfcadd(x = bfc, rname = datasets_available[[x]][["id"]], fpath = datasets_available[[x]][["url"]])
+            bioc_rpath <- bfcadd(x = bfc, rname = datasets_available_list[[x]][["id"]], fpath = datasets_available_list[[x]][["url"]])
         }
         readRDS(bioc_rpath)
     }
@@ -63,7 +63,7 @@ lpfun <- function() {
             if (is.null(input[[.dataset_selected_index]])) {
                 contents <- markdown("")
             } else {
-                contents <- markdown(datasets_available[[input[[.dataset_selected_index]]]][["summary"]])
+                contents <- markdown(datasets_available_list[[input[[.dataset_selected_index]]]][["summary"]])
             }
             contents
         })
@@ -94,8 +94,8 @@ lpfun <- function() {
                 #     showNotification("invalid initial state supplied", type="warning")
                 #     init <- NULL
                 # }
-                init <- list(ReducedDimensionPlot())
-                # init <- NULL
+                # init <- list(ReducedDimensionPlot())
+                init <- NULL
                 FUN(SE=se2, INITIAL=init)
             }
         }, ignoreNULL=TRUE, ignoreInit=TRUE)

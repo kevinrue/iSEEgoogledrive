@@ -2,6 +2,8 @@ library(iSEE)
 library(DT)
 library(BiocFileCache)
 
+shiny::addResourcePath("datasets", "datasets")
+
 # load_datasets ----
 
 load_datasets <- function(dir = "datasets") {

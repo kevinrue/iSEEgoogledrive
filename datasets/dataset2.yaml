@@ -12,3 +12,5 @@ summary: |
   follicular lymphoma samples (sce_follicular_annotated_final.rds) and high
   grade serous ovarian cancer samples (sce_hgsc_annotated_final.rds) as detailed
   in the paper, as well as reactive lymph node data (sce_RLN_normalized.rds).
+  
+  <img src="datasets/dataset2.png" alt="dataset2.png" width="100%">

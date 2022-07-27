@@ -1,0 +1,12 @@
+id: zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds
+url: https://zenodo.org/record/3594331/files/sce_hgsc_annotated_final.rds?download=1
+summary: |
+  # Raw and normalized count data for "Probabilistic cell-type assignment of single-cell RNA-seq for tumor microenvironment profiling"
+  
+  ## Description
+  
+  SingleCellExperiment objects containing raw and normalized counts, as well as
+  reduced dimension representations and cell type annotations for both the
+  follicular lymphoma samples (sce_follicular_annotated_final.rds) and high
+  grade serous ovarian cancer samples (sce_hgsc_annotated_final.rds) as detailed
+  in the paper, as well as reactive lymph node data (sce_RLN_normalized.rds).

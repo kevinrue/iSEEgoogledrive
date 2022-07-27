@@ -2,10 +2,6 @@ library(iSEE)
 library(DT)
 library(BiocFileCache)
 
-# ?createLandingPage
-
-# googledrive::drive_download(file = as_id("1RQRBKzggV5vzNes-LlJhwYwozaC0ZDen"), path = "data/tidyverse/iris.csv", verbose = TRUE)
-
 datasets_available <- rbind(
     data.frame(
         id = "zenodo.org/record/5196144/files/sce_hnscc.rds",

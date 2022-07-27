@@ -2,7 +2,26 @@ library(iSEE)
 library(DT)
 library(BiocFileCache)
 
-datasets_available <- read.table("datasets.txt", header = TRUE)
+# load_datasets ----
+
+load_datasets <- function(dir = "datasets") {
+    dataset_files <- list.files(path = dir, pattern = "*.yaml", full.names = TRUE)
+    dataset_infos <- lapply(dataset_files, function(x){ yaml::read_yaml(x) })
+    names(dataset_infos) <- as.character(lapply(datasets_available, function(x) { x$id }))
+    return(dataset_infos)
+}
+
+datasets_available <- load_datasets()
+str(datasets_available)
+
+tabulate_datasets <- function(list) {
+    data.frame(
+        id = names(datasets_available)
+    )
+}
+
+datasets_available_table <- tabulate_datasets(datasets_available)
+datasets_available_table
 
 # lpfun ----
 
@@ -13,7 +32,7 @@ lpfun <- function() {
         dataset_id <- datasets_available[x, "id"]
         bioc_rpath <- bfcquery(x = bfc, query = dataset_id, field = "rname")[1, "rpath", drop=TRUE]
         if (is.na(bioc_rpath)) {
-            bioc_rpath <- bfcadd(x = bfc, rname = datasets_available[x, "id"], fpath = datasets_available[x, "url"])
+            bioc_rpath <- bfcadd(x = bfc, rname = datasets_available[[x]][["id"]], fpath = datasets_available[[x]][["url"]])
         }
         readRDS(bioc_rpath)
     }
@@ -26,7 +45,12 @@ lpfun <- function() {
         # nocov start
         output$allPanels <- renderUI({
             tagList(
-                fluidRow(column(width = 12L, DTOutput(.ui_dataset_table))),
+                fluidRow(
+                    column(width = 6L, DTOutput(.ui_dataset_table)),
+                    column(width = 6L, shinydashboard::box(title = "Overview",
+                      collapsible = FALSE, width = NULL, uiOutput("TODO")
+                    ))
+                ),
                 fluidRow(column(width = 12L, actionButton(.ui_launch_button, label="Launch", style="color: #ffffff; background-color: #0092AC; border-color: #2e6da4")))
             )
         })
@@ -34,12 +58,22 @@ lpfun <- function() {
         
         launcherObjects <- new.env()
         
+        output[["TODO"]] <- renderUI({
+            if (is.null(input[[.dataset_selected_index]])) {
+                contents <- markdown("")
+            } else {
+                contents <- markdown(datasets_available[[input[[.dataset_selected_index]]]][["summary"]])
+            }
+            contents
+        })
+        
         observeEvent(input[[.dataset_selected_index]], {
             launcherObjects[[.dataset_selected_index]] <- input[[.dataset_selected_index]]
+            
         }, ignoreInit = FALSE, ignoreNULL = FALSE)
         
         output[[.ui_dataset_table]] <- DT::renderDT({
-            DT::datatable(datasets_available, filter="top", rownames=TRUE,
+            DT::datatable(datasets_available_table, filter="top", rownames=TRUE,
             options=list(
                 search=list(search="", smart=FALSE, regex=TRUE, caseInsensitive=FALSE),
                 searchCols=c(list(NULL), list(NULL)), # row names are the first column!

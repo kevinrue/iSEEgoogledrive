@@ -30,7 +30,7 @@ lpfun <- function() {
     bfc <- BiocFileCache()
     
     se_load <- function(x) {
-        dataset_id <- datasets_available[x, "id"]
+        dataset_id <- datasets_available[[x]][["id"]]
         bioc_rpath <- bfcquery(x = bfc, query = dataset_id, field = "rname")[1, "rpath", drop=TRUE]
         if (is.na(bioc_rpath)) {
             bioc_rpath <- bfcadd(x = bfc, rname = datasets_available[[x]][["id"]], fpath = datasets_available[[x]][["url"]])

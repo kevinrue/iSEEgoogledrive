@@ -73,7 +73,7 @@ lpfun <- function() {
         }, ignoreInit = FALSE, ignoreNULL = FALSE)
         
         output[[.ui_dataset_table]] <- DT::renderDT({
-            DT::datatable(datasets_available_table, filter="top", rownames=TRUE,
+            DT::datatable(datasets_available_table, filter="top", rownames=FALSE,
             options=list(
                 search=list(search="", smart=FALSE, regex=TRUE, caseInsensitive=FALSE),
                 searchCols=c(list(NULL), list(NULL)), # row names are the first column!
@@ -106,5 +106,5 @@ lpfun <- function() {
 
 app <- iSEE(landingPage=lpfun())
 if (interactive()) {
-  shiny::runApp(app, port=1234) # , launch.browser = TRUE
+  shiny::runApp(app, port=1234, launch.browser = TRUE)
 }

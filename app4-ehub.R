@@ -6,9 +6,9 @@ lpfun <- function() {
     ehub <- ExperimentHub()
     
     datasets_available_table <- as.data.frame(mcols(ehub))
-    exclude_rdataclass <- c("AAStringSet", "adductQuantif", "BamFile", "boosting", "caretStack",  "CellMapperList", "character", "Character", "CompressedCharacterList",  "CytoImageList", "Data Frame", "data.frame", "data.table", "data.table data.frame",  "DataFrame", "Dframe", "DFrame", "dgCMatrix", "DNAStringSet",  "EBImage", "environment", "FaFile", "FilePath", "flowSet", "GAlignmentPairs",  "gds.class", "GeneRegionTrack", "GenomicRanges", "GenomicRatioSet",  "GFF3File", "GRanges", "GSEABase::GeneSetCollection", "H5File",  "HDF5-SummarizedExperiment", "HDF5Database", "HDF5Matrix", "Int",  "InteractionSet", "list", "List", "list with 4 GRanges", "Lists",  "magick-image", "matrix", "Matrix", "matrix array", "MIAME",  "mzXML", "numeric", "preProcess", "QFeatures", "RaggedExperiment",  "randomForest", "SigDF", "SigSet", "Spectra", "SummarizedBenchmark",  "tbl", "TENxMatrix", "tibble", "vector", "Vector")
+    exclude_rdataclass <- c("AAStringSet", "adductQuantif", "BamFile", "boosting", "caretStack",  "CellMapperList", "character", "Character", "CompressedCharacterList",  "CytoImageList", "Data Frame", "data.frame", "data.table", "data.table data.frame",  "DataFrame", "Dframe", "DFrame", "dgCMatrix", "DNAStringSet",  "EBImage", "environment", "FaFile", "FilePath", "flowSet", "GAlignmentPairs",  "gds.class", "GeneRegionTrack", "GenomicRanges", "GenomicRatioSet",  "GFF3File", "GRanges", "GSEABase::GeneSetCollection", "H5File",  "HDF5-SummarizedExperiment", "HDF5Database", "HDF5Matrix", "Int",  "InteractionSet", "list", "List", "list with 4 GRanges", "Lists",  "magick-image", "matrix", "Matrix", "matrix array", "MIAME",  "mzXML", "numeric", "preProcess", "QFeatures", "RaggedExperiment",  "randomForest", "SigDF", "SigSet", "Spectra", "SpatialFeatureExperiment", "SummarizedBenchmark",  "tbl", "TENxMatrix", "tibble", "vector", "Vector")
     # TODO: switch to include_rdataclass when all possible types are checked
-    include_rdataclass <- c("ExpressionSet", "RangedSummarizedExperiment", "SummarizedExperiment",  "bsseq", "SingleCellExperiment", "RGChannelSetExtended", "BSseq",  "SeuratObject", "GSEABase::SummarizedExperiment", "SpatialExperiment",  "SpatialFeatureExperiment", "DEXSeqDataSet")
+    include_rdataclass <- c("ExpressionSet", "RangedSummarizedExperiment", "SummarizedExperiment",  "bsseq", "SingleCellExperiment", "RGChannelSetExtended", "BSseq",  "SeuratObject", "GSEABase::SummarizedExperiment", "SpatialExperiment",  "DEXSeqDataSet")
     # NOTE: SummarizedBenchmark seems to require a bit of work to clean up missing data
     # NOTE: SeuratObject seems to require a bit of work to use the custom function for conversion
     datasets_available_table <- subset(datasets_available_table, rdataclass %in% include_rdataclass)
@@ -33,18 +33,26 @@ lpfun <- function() {
         output$allPanels <- renderUI({
             tagList(
                 fluidRow(
-                    column(width = 7L, shinydashboard::box(title = "ExperimentHub",
-                      collapsible = FALSE, width = NULL,
-                        selectInput(inputId = .ui_dataset_columns, label = "Show columns:", choices = colnames(datasets_available_table), selected = c("title", "dataprovider", "species", "rdataclass"), multiple = TRUE),
-                        DTOutput(.ui_dataset_table)
+                    column(width = 7L,
+                        shinydashboard::box(title = "ExperimentHub",
+                            collapsible = FALSE, width = NULL,
+                            selectInput(inputId = .ui_dataset_columns, label = "Show columns:",
+                                choices = colnames(datasets_available_table),
+                                selected = c("title", "dataprovider", "species", "rdataclass"),
+                                multiple = TRUE),
+                            DTOutput(.ui_dataset_table)
                     )),
-                    column(width = 5L, shinydashboard::box(title = "Overview",
-                      collapsible = FALSE, width = NULL,
-                        uiOutput(.ui_markdown_overview)
-                    ))
-                ),
-                fluidRow(column(width = 12L, actionButton(.ui_launch_button, label="Launch", style="color: #ffffff; background-color: #0092AC; border-color: #2e6da4")))
-            )
+                    column(width = 5L,
+                        shinydashboard::box(title = "Selected dataset",
+                            collapsible = FALSE, width = NULL,
+                            uiOutput(.ui_markdown_overview),
+                            p(
+                                actionButton(.ui_launch_button, label="Launch!",
+                                    style="color: #ffffff; background-color: #0092AC; border-color: #2e6da4"),
+                                style="text-align: center;"))
+                        )
+                    )
+                )
         })
         # nocov end
         

@@ -1,3 +1,5 @@
+library(iSEE)
+library(DT)
 library(ExperimentHub)
 
 # lpfun ----
@@ -31,7 +33,11 @@ lpfun <- function() {
     # NOTE: SeuratObject seems to require a bit of work to use the custom function for conversion
     datasets_available_table <- subset(datasets_available_table, rdataclass %in% include_rdataclass)
     # Convert certain columns to factor, allowing DT::datatable to offer selectize in the corresponding search boxes.
+    datasets_available_table$species <- as.factor(datasets_available_table$species)
+    datasets_available_table$taxonomyid <- as.factor(datasets_available_table$taxonomyid)
+    datasets_available_table$coordinate_1_based <- as.factor(datasets_available_table$coordinate_1_based)
     datasets_available_table$rdataclass <- as.factor(datasets_available_table$rdataclass)
+    datasets_available_table$sourcetype <- as.factor(datasets_available_table$sourcetype)
     
     se_load <- function(x) {
         object <- ehub[[x]]
@@ -56,10 +62,11 @@ lpfun <- function() {
                     column(width = 7L,
                         shinydashboard::box(title = "ExperimentHub",
                             collapsible = FALSE, width = NULL,
-                            selectInput(inputId = .ui_dataset_columns, label = "Show columns:",
+                            selectizeInput(inputId = .ui_dataset_columns, label = "Show columns:",
                                 choices = colnames(datasets_available_table),
                                 selected = c("title", "dataprovider", "species", "rdataclass"),
-                                multiple = TRUE),
+                                multiple = TRUE,
+                                options = list(plugins=list('remove_button', 'drag_drop'))),
                             DTOutput(.ui_dataset_table)
                     )),
                     column(width = 5L,

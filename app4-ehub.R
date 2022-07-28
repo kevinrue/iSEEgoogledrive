@@ -6,8 +6,12 @@ lpfun <- function() {
     ehub <- ExperimentHub()
     
     datasets_available_table <- as.data.frame(mcols(ehub))
-    exclude_rdataclass <- c("CellMapperList", "GAlignmentPairs")
-    datasets_available_table <- subset(datasets_available_table, !rdataclass %in% exclude_rdataclass)
+    exclude_rdataclass <- c("AAStringSet", "adductQuantif", "BamFile", "boosting", "caretStack",  "CellMapperList", "character", "Character", "CompressedCharacterList",  "CytoImageList", "Data Frame", "data.frame", "data.table", "data.table data.frame",  "DataFrame", "Dframe", "DFrame", "dgCMatrix", "DNAStringSet",  "EBImage", "environment", "FaFile", "FilePath", "flowSet", "GAlignmentPairs",  "gds.class", "GeneRegionTrack", "GenomicRanges", "GenomicRatioSet",  "GFF3File", "GRanges", "GSEABase::GeneSetCollection", "H5File",  "HDF5-SummarizedExperiment", "HDF5Database", "HDF5Matrix", "Int",  "InteractionSet", "list", "List", "list with 4 GRanges", "Lists",  "magick-image", "matrix", "Matrix", "matrix array", "MIAME",  "mzXML", "numeric", "preProcess", "QFeatures", "RaggedExperiment",  "randomForest", "SigDF", "SigSet", "Spectra", "SummarizedBenchmark",  "tbl", "TENxMatrix", "tibble", "vector", "Vector")
+    # TODO: switch to include_rdataclass when all possible types are checked
+    include_rdataclass <- c("ExpressionSet", "RangedSummarizedExperiment", "SummarizedExperiment",  "bsseq", "SingleCellExperiment", "RGChannelSetExtended", "BSseq",  "SeuratObject", "GSEABase::SummarizedExperiment", "SpatialExperiment",  "SpatialFeatureExperiment", "DEXSeqDataSet")
+    # NOTE: SummarizedBenchmark seems to require a bit of work to clean up missing data
+    # NOTE: SeuratObject seems to require a bit of work to use the custom function for conversion
+    datasets_available_table <- subset(datasets_available_table, rdataclass %in% include_rdataclass)
     
     se_load <- function(x) {
         object <- ehub[[x]]
@@ -31,7 +35,7 @@ lpfun <- function() {
                 fluidRow(
                     column(width = 7L, shinydashboard::box(title = "ExperimentHub",
                       collapsible = FALSE, width = NULL,
-                        selectInput(inputId = .ui_dataset_columns, label = "Show columns:", choices = colnames(datasets_available_table), selected = c("title", "dataprovider", "species"), multiple = TRUE),
+                        selectInput(inputId = .ui_dataset_columns, label = "Show columns:", choices = colnames(datasets_available_table), selected = c("title", "dataprovider", "species", "rdataclass"), multiple = TRUE),
                         DTOutput(.ui_dataset_table)
                     )),
                     column(width = 5L, shinydashboard::box(title = "Overview",
@@ -90,7 +94,7 @@ lpfun <- function() {
         output[[.ui_dataset_table]] <- DT::renderDT({
             force(rObjects$rerender_datasets)
             datasets_table_visible <- datasets_available_table[, pObjects[[.ui_dataset_columns]]]
-            DT::datatable(datasets_table_visible, filter="top", rownames=FALSE,
+            DT::datatable(datasets_table_visible, filter="top", rownames=TRUE,
             options=list(
                 search=list(search="", smart=FALSE, regex=TRUE, caseInsensitive=FALSE),
                 searchCols=c(list(NULL), list(NULL)), # row names are the first column!

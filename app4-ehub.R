@@ -6,9 +6,16 @@ lpfun <- function() {
     ehub <- ExperimentHub()
     
     datasets_available_table <- as.data.frame(mcols(ehub))
+    exclude_rdataclass <- c("CellMapperList", "GAlignmentPairs")
+    datasets_available_table <- subset(datasets_available_table, !rdataclass %in% exclude_rdataclass)
     
     se_load <- function(x) {
-        ehub[[x]]
+        object <- ehub[[x]]
+        if (!is(object, "SummarizedExperiment")) {
+            object <- as(object, "SummarizedExperiment")
+        }
+        object <- as(object, "SingleCellExperiment")
+        object
     }
     
     function (FUN, input, output, session) {
@@ -49,7 +56,7 @@ lpfun <- function() {
             force(rObjects$rerender_overview)
             dataset_selected_id <- pObjects[[.dataset_selected_id]]
             if (!length(dataset_selected_id)) {
-                contents <- markdown("")
+                contents <- markdown("Please select a data set.")
             } else {
                 ehub_selected <- ehub[dataset_selected_id]
                 contents <- markdown(paste0(

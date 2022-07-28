@@ -8,13 +8,13 @@ lpfun <- function() {
     datasets_available_table <- as.data.frame(mcols(ehub))
     
     se_load <- function(x) {
-        stop("TODO")
+        ehub[[x]]
     }
     
     function (FUN, input, output, session) {
         .ui_dataset_table <- "datasets_table"
         .ui_launch_button <- "launch"
-        .dataset_selected_index <- paste0(.ui_dataset_table, "_rows_selected")
+        .dataset_selected_id <- paste0(.ui_dataset_table, "_rows_selected")
         .ui_dataset_columns <- "datasets_columns"
         .ui_markdown_overview <- "markdown_overview"
         
@@ -38,21 +38,22 @@ lpfun <- function() {
         # nocov end
         
         pObjects <- new.env()
-        rObjects <- reactiveValues(rerender_datasets=1L)
+        rObjects <- reactiveValues(rerender_datasets=1L, rerender_overview=1L)
         
-        observeEvent(input[[.dataset_selected_index]], {
-            pObjects[[.dataset_selected_index]] <- input[[.dataset_selected_index]]
-            
+        observeEvent(input[[.dataset_selected_id]], {
+            pObjects[[.dataset_selected_id]] <- rownames(datasets_available_table)[input[[.dataset_selected_id]]]
+            rObjects$rerender_overview <- iSEE:::.increment_counter(isolate(rObjects$rerender_overview))
         }, ignoreInit = FALSE, ignoreNULL = FALSE)
         
         output[[.ui_markdown_overview]] <- renderUI({
-            dataset_selected_index <- input[[.dataset_selected_index]]
-            if (is.null(dataset_selected_index)) {
+            force(rObjects$rerender_overview)
+            dataset_selected_id <- pObjects[[.dataset_selected_id]]
+            if (!length(dataset_selected_id)) {
                 contents <- markdown("")
             } else {
-                ehub_selected <- ehub[dataset_selected_index]
+                ehub_selected <- ehub[dataset_selected_id]
                 contents <- markdown(paste0(
-                    "# ", ehub_selected$title, "\n\n",
+                    "# ", sprintf("[%s]", ehub_selected$ah_id), " ", ehub_selected$title, "\n\n",
                     "- **Data provider:** ", ehub_selected$dataprovider, "\n\n",
                     "- **Species:** ", ehub_selected$species, "\n\n",
                     "- **Taxonomy ID:** ", ehub_selected$taxonomyid, "\n\n",
@@ -68,7 +69,7 @@ lpfun <- function() {
                     "- **Source URL:** ", ehub_selected$sourceurl, "\n\n",
                     "- **Source type:** ", ehub_selected$sourcetype, "\n\n",
                     "## Tags", "\n\n",
-                    paste0(sprintf("- %s", strsplit(x$tags, ", ")[[1]]), collapse = "\n")
+                    paste0(sprintf("- %s", strsplit(ehub_selected$tags, ", ")[[1]]), collapse = "\n")
                 ))
             }
             contents
@@ -93,7 +94,7 @@ lpfun <- function() {
 
         # nocov start, ignoreNULL=TRUE, ignoreInit=TRUE
         observeEvent(input[[.ui_launch_button]], {
-            se2 <- try(se_load(pObjects[[.dataset_selected_index]]))
+            se2 <- try(se_load(pObjects[[.dataset_selected_id]]))
             if (is(se2, "try-error")) {
                 showNotification("invalid SummarizedExperiment supplied", type="error")
             } else {
